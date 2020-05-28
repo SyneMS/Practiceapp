@@ -3,14 +3,16 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry, map } from 'rxjs/operators';
 import { JwtHelperService } from "@auth0/angular-jwt";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-  baseUrl = "http://localhost:5000/api/auth/";
+  baseUrl = environment.apiUrl + "auth/";
   jwtHelper = new JwtHelperService();
+  decodeToken: any;
   constructor(private http: HttpClient) { }
 
   login(data) {
@@ -19,6 +21,7 @@ export class LoginService {
         const user = response;
         if (user) {
           localStorage.setItem('token', user.token);
+          this.decodeToken = this.jwtHelper.decodeToken(user.token);
         }
       }))
     //.pipe(catchError(this.handleError));
